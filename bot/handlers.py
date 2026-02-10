@@ -29,6 +29,17 @@ async def cmd_start(message: Message):
         parse_mode='HTML'
     )
 
+# Кнопка вернуться в меню
+@router.callback_query(F.data == 'back_to_menu')
+async def back(callback: CallbackQuery):
+    await callback.message.answer(
+        text="💰 <b>Финансовый помощник</b>\n\n"
+        "Я помогу вам вести учет доходов и расходов.\n"
+        "Выберите действие:",
+        reply_markup=kb.get_main_keyboard(),
+        parse_mode='HTML'
+    )
+
 # Кнопка вернуться в зависимости от состояния
 @router.callback_query(F.data == 'back')
 async def back(callback: CallbackQuery, state: FSMContext):
@@ -112,7 +123,7 @@ async def process_income_amount(message: Message, state: FSMContext):
 
         await message.answer(
             f"✅ Доход {amount} руб успешно добавлен!",
-            reply_markup=kb.get_main_keyboard()
+            reply_markup=kb.get_back_to_menu_keyboard()
         )
         await state.clear()
 
@@ -151,7 +162,7 @@ async def process_cost_amount(message: Message, state: FSMContext):
             f"✅ Расход добавлен!\n"
             f"📂 Категория: <b>{category}</b>\n"
             f"💰 Сумма: <b>{amount}</b> руб",
-            reply_markup=kb.get_main_keyboard(),
+            reply_markup=kb.get_back_to_menu_keyboard(),
             parse_mode="HTML"
         )
 

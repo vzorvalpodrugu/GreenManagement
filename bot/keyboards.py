@@ -56,3 +56,10 @@ def get_back_keyboard():
     builder.button(text='Назад ◀️', callback_data='back')
 
     return builder.as_markup()
+
+def get_back_to_menu_keyboard():
+    builder = InlineKeyboardBuilder()
+
+    builder.button(text='Вернуться ◀️', callback_data='back_to_menu')
+
+    return builder.as_markup()
