@@ -65,6 +65,19 @@ async def choice_record(
         parse_mode='HTML'
     )
 
+@router.callback_query(kb.MainCallBack.filter(F.action=='balance_show'))
+async def show_balance(
+        callback: CallbackQuery,
+        state: FSMContext
+):
+    answer_db = await db.get_balance()
+
+    await callback.message.edit_text(
+        "<b>Ваш баланс:</b>\n\n"
+        f'💎 {answer_db}',
+        reply_markup=kb.get_back_to_menu_keyboard(),
+        parse_mode='HTML'
+    )
 
 # Кнопка вернуться в меню
 @router.callback_query(F.data == 'back_to_menu')
@@ -205,8 +218,12 @@ async def process_income_amount(message: Message, state: FSMContext):
             raise ValueError
 
         await db.add_income(amount)
-        # Сохраняем сумму
+
         await state.update_data(amount=amount)
+
+        balance = await db.get_balance()
+        balance += amount
+        await db.set_balance(balance)
 
         await message.answer(
             f"✅ Доход {amount} руб успешно добавлен!",
@@ -271,7 +288,10 @@ async def process_cost_amount(message: Message, state: FSMContext):
         category = data['category'][:-2:]
 
         await db.add_cost(category, amount)
-        print(category)
+        balance = await db.get_balance()
+        balance-=amount
+        await db.set_balance(balance)
+
         await message.answer(
             f"✅ Расход добавлен!\n"
             f"📂 Категория: <b>{category}</b>\n"

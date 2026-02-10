@@ -62,6 +62,20 @@ class Database:
         async with self.pool.acquire() as conn:
             await conn.fetchval("INSERT INTO costs (category, amount) VALUES ($1, $2);", category, amount)
 
+    async def get_balance(self):
+        async with self.pool.acquire() as conn:
+            balance = await conn.fetch('SELECT * FROM balance;')
+
+            return float(balance[0]['amount'])
+
+    async def set_balance(self, balance):
+        async with self.pool.acquire() as conn:
+            balance = await conn.fetch(f"""
+            UPDATE balance 
+            SET amount = {balance};
+            """)
+
+
     async def show_incomes(self, period: str) -> str:
         """Стильный отчет о доходах с зелеными плюсами"""
         async with self.pool.acquire() as conn:

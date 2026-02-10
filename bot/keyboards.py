@@ -27,6 +27,11 @@ def get_main_keyboard():
         callback_data=MainCallBack(action='main_show')
     )
 
+    builder.button(
+        text='Баланс',
+        callback_data=MainCallBack(action='balance_show')
+    )
+
     builder.adjust(1)
     return builder.as_markup()
 

@@ -11,5 +11,9 @@ sql_create_databases="""
         amount DECIMAL(10,2) NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
+    
+    CREATE TABLE IF NOT EXISTS balance(
+        amount DECIMAL(10,2) 
+    );
 """
 
