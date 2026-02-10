@@ -11,7 +11,26 @@ class FinanceCallBack(CallbackData, prefix='finance'):
     type: str
     period: Optional[str] = None
 
+class MainCallBack(CallbackData, prefix='main'):
+    action: str #add, show, balance, question
+
 def get_main_keyboard():
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text="Внести в систему",
+        callback_data=MainCallBack(action='main_add')
+    )
+
+    builder.button(
+        text="Показать данные",
+        callback_data=MainCallBack(action='main_show')
+    )
+
+    builder.adjust(1)
+    return builder.as_markup()
+
+def get_add_keyboard():
     builder = InlineKeyboardBuilder()
 
     builder.button(
@@ -25,6 +44,42 @@ def get_main_keyboard():
     )
 
     builder.adjust(2)
+
+    builder.row(InlineKeyboardButton(text="◀️ Назад", callback_data='back'))
+    return builder.as_markup()
+
+def get_show_keyboard():
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text="💵 Доходы",
+        callback_data=FinanceCallBack(action='show', type='income').pack()
+    )
+
+    builder.button(
+        text="💸 Расходы",
+        callback_data=FinanceCallBack(action='show', type='cost').pack()
+    )
+
+    builder.adjust(2)
+
+    builder.row(InlineKeyboardButton(text="◀️ Назад", callback_data='back'))
+    return builder.as_markup()
+
+def get_period_keyboard(report_type: str):
+    periods = [
+        'Сегодня',
+        'Вчера',
+        'Неделя',
+        'Месяц'
+    ]
+    builder = InlineKeyboardBuilder()
+
+    for period in periods:
+        builder.button(text=period, callback_data=FinanceCallBack(action='report', type=report_type, period=period))
+    builder.adjust(1)
+
+    builder.row(InlineKeyboardButton(text="◀️ Назад", callback_data='back'))
 
     return builder.as_markup()
 
